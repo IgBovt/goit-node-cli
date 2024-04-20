@@ -59,8 +59,4 @@ async function addContact(name, email, phone) {
   return newContact;
 }
 
-// getContactById("qdggE76Jtbfd9eWJHrssH");
-// addContact("Ann", "Ann@gmail.com", "99999999");
-// listContacts();
-// removeContact("3cb708c2-facb-4841-869d-dea0a3d7510d");
-// node contacts
+export default { listContacts, getContactById, removeContact, addContact };
