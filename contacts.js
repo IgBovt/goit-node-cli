@@ -1,22 +1,66 @@
-const fs = require("node:fs/promises");
-const path = require("node:path");
+import * as fs from "node:fs/promises";
+import path from "node:path";
+import crypto from "node:crypto";
 
-const contactsPath = path.basename("./src/db/contacts.json");
+const contactsPath = path.resolve("db", "contacts.json");
 
-console.log(contactsPath);
+const readContacts = async () => {
+  const data = await fs.readFile(contactsPath, { encoding: "utf-8" });
+  return JSON.parse(data);
+};
 
+const writeContact = (contact) => {
+  return fs.writeFile(contactsPath, JSON.stringify(contact, undefined, 2));
+};
+
+//=============================================//
+//=============================================//
 async function listContacts() {
-  // ...твій код. Повертає масив контактів.
+  return readContacts();
 }
 
 async function getContactById(contactId) {
-  // ...твій код. Повертає об'єкт контакту з таким id. Повертає null, якщо контакт з таким id не знайдений.
+  const contacts = await readContacts();
+  const findContact = contacts.find((item) => item.id === contactId);
+
+  if (typeof findContact === "undefined") {
+    return null;
+  }
+  return findContact;
 }
 
 async function removeContact(contactId) {
-  // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
+  const contacts = await readContacts();
+  const index = contacts.findIndex((contact) => contact.id === contactId);
+
+  if (index === -1) {
+    return null;
+  }
+  const removedContact = contacts[index];
+
+  const newContacts = [
+    ...contacts.slice(0, index),
+    ...contacts.slice(index + 1),
+  ];
+  await writeContact(newContacts);
+  return removedContact;
 }
 
 async function addContact(name, email, phone) {
-  // ...твій код. Повертає об'єкт доданого контакту (з id).
+  const contacts = await readContacts();
+  const newContact = {
+    id: crypto.randomUUID(),
+    name,
+    email,
+    phone,
+  };
+  contacts.push(newContact);
+  await writeContact(contacts);
+  return newContact;
 }
+
+// getContactById("qdggE76Jtbfd9eWJHrssH");
+// addContact("Ann", "Ann@gmail.com", "99999999");
+// listContacts();
+// removeContact("3cb708c2-facb-4841-869d-dea0a3d7510d");
+// node contacts
